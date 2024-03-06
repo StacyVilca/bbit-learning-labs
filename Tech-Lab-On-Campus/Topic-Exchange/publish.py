@@ -24,7 +24,10 @@ def main(ticker: str, price: float, sector: str) -> None:
     #
     #                       WRITE CODE HERE!!!
     #
+   
 
+    routing_key = ticker + "." + price + "." + sector
+    
 
     producer = mqProducer(routing_key=routingKey,exchange_name="Tech Lab Topic Exchange")
 
@@ -33,7 +36,10 @@ def main(ticker: str, price: float, sector: str) -> None:
     #
     #                       WRITE CODE HERE!!!
     #
-    
+    message = ' '.join(sys.argv[2:]) or 'Hello World!'
+    channel.basic_publish(
+        exchange='topic_logs', routing_key=routing_key, body=message)
+    print(f" [x] Sent {routing_key}:{message}")
     
     producer.publishOrder(message)
 
@@ -43,5 +49,12 @@ if __name__ == "__main__":
     #
     #                       WRITE CODE HERE!!!
     #
+    print("Please enter ticker: ", sys.argv[0])
+    print("Please enter pricer:  ", sys.argv[1])
+    print("Please enter sector: ", sys.argv[2])
+    
+    ticker = sys.argv[0]
+    pricer = sys.argv[1]
+    sector = sys.argv[2]
 
     sys.exit(main(ticker,price,sector))
