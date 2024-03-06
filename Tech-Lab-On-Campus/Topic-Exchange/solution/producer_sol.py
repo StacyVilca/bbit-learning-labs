@@ -3,9 +3,10 @@ import pika
 import os
 
 class mqProducer(mqProducerInterface):
-    def __init__(self, exchange_name: str) -> None:
+    def __init__(self, routine_key, exchange_name: str) -> None:
         # Save parameters to class variables
         self.exchange_name = exchange_name
+        self.routine_key = routine_key
         # Call setupRMQConnection
         self.setupRMQConnection()
         
@@ -23,14 +24,13 @@ class mqProducer(mqProducerInterface):
     def publishOrder(self, message: str) -> None:
         # Create Appropiate Topic String
         self.channel.exchange_declare(
-            exchange=self.exchange_name, exchange_type="Topic Exchange"
+            exchange=self.exchange_name, exchange_type="topic"
         )
         # Send serialized message or String
         self.channel.basic_publish(
             exchange = self.exchange_name,
             routing_key = self.routine_key,
             body = message,
-            exchange_type = "Topic Exchange",
         )
         
         # Print Confirmation
