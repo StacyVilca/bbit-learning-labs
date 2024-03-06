@@ -14,6 +14,7 @@
 
 import argparse
 import sys
+import pika
 
 from solution.producer_sol import mqProducer  # pylint: disable=import-error
 
@@ -29,13 +30,20 @@ def main(ticker: str, price: float, sector: str) -> None:
     routing_key = ticker + "." + price + "." + sector
     
 
-    producer = mqProducer(routing_key=routingKey,exchange_name="Tech Lab Topic Exchange")
+    producer = mqProducer(routing_key=routing_key,exchange_name="Tech Lab Topic Exchange")
 
 
     # Implement Logic To Create a message variable from the variable EG. "TSLA price is now $500" - Step 3
     #
     #                       WRITE CODE HERE!!!
     #
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+
+    # Declare the topic exchange
+    channel.exchange_declare(exchange='topic_logs', exchange_type='topic')
+
     message = ' '.join(sys.argv[2:]) or 'Hello World!'
     channel.basic_publish(
         exchange='topic_logs', routing_key=routing_key, body=message)
@@ -49,12 +57,12 @@ if __name__ == "__main__":
     #
     #                       WRITE CODE HERE!!!
     #
-    print("Please enter ticker: ", sys.argv[0])
-    print("Please enter pricer:  ", sys.argv[1])
-    print("Please enter sector: ", sys.argv[2])
+    print("Please enter ticker: ", sys.argv[1])
+    print("Please enter pricer:  ", sys.argv[2])
+    print("Please enter sector: ", sys.argv[3])
     
-    ticker = sys.argv[0]
-    pricer = sys.argv[1]
-    sector = sys.argv[2]
+    ticker = sys.argv[1]
+    pricer = sys.argv[2]
+    sector = sys.argv[3]
 
     sys.exit(main(ticker,price,sector))
